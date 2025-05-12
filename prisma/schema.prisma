@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int             @id @default(autoincrement())
+  fullName     String
+  email        String          @unique
+  passwordHash String
+  refreshToken  String?
+  bookings     Booking[]
+  services     UserService[]
+  digitalKeys  DigitalKey[]
+  createdAt    DateTime        @default(now())
+}
+
+model Room {
+  id          Int          @id @default(autoincrement())
+  number      String       @unique
+  status      Boolean   @default(true)
+  bookings    Booking[]
+  digitalKeys DigitalKey[]
+}
+
+model Booking {
+  id        Int          @id @default(autoincrement())
+  user      User         @relation(fields: [userId], references: [id])
+  userId    Int
+  room      Room         @relation(fields: [roomId], references: [id])
+  roomId    Int
+  startDate DateTime
+  endDate   DateTime
+  services  UserService[]
+  digitalKeys DigitalKey[]
+}
+
+model Service {
+  id          Int            @id @default(autoincrement())
+  name        String
+  userServices UserService[]
+}
+
+model UserService {
+  id         Int       @id @default(autoincrement())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     Int
+  service    Service   @relation(fields: [serviceId], references: [id])
+  serviceId  Int
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  bookingId  Int
+}
+
+
+
+model DigitalKey {
+  id             String        @id @default(uuid())
+  key            String        // Хеш или уникальный токен
+  user           User          @relation(fields: [userId], references: [id])
+  userId         Int
+  booking        Booking       @relation(fields: [bookingId], references: [id])
+  bookingId      Int           
+  room           Room          @relation(fields: [roomId], references: [id])
+  roomId         Int
+  startDate      DateTime
+  endDate        DateTime
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+}
+
+enum BookingStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
