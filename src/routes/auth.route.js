@@ -1,7 +1,8 @@
 import express from "express";
-import { register, login, getProfile } from "../controllers/auth.controller.js";
+import { register, login } from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middlwares/auth.middlwares.js";
 import { refreshAccessToken } from "../utils/token.js";
+import { getProfile } from "../controllers/general.controllers.js";
 const AuthRouter = express.Router();
 
 AuthRouter.post("/register", register);

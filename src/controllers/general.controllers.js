@@ -6,9 +6,16 @@ export const getProfile = async (req, res) => {
     select: { id: true, fullName: true, email: true, createdAt: true },
   });
 
+  const currentDay = new Date();
+
+  const booking = await prisma.booking.findMany({
+    where: { userId: req.user.id },
+  });
+
+  user["bookings"] = booking;
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  res.json(user);
+  res.json({ user });
 };
 
 export const getAllRooms = async (req, res) => {
@@ -50,3 +57,27 @@ export const getAllBookings = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const getAllServices = async (req, res) => {
+  try {
+    const services = await prisma.service.findMany();
+    res.json(services);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// export const getAllServices = async (req, res) => {
+//   try {
+//     const services = await prisma.userService.findMany({
+//       include: {
+//         user: true,
+//         service: true, // Включаем информацию о самой услуге
+//         booking: true, // Включаем информацию о бронировании
+//       },
+//     });
+//     res.json(services);
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };

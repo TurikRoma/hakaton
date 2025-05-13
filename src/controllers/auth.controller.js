@@ -44,13 +44,13 @@ export const login = async (req, res) => {
   res.json({ user, accessToken, refreshToken });
 };
 
-export const getProfile = async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.user.id },
-    select: { id: true, fullName: true, email: true, createdAt: true },
-  });
+// export const getProfile = async (req, res) => {
+//   const user = await prisma.user.findUnique({
+//     where: { id: req.user.id },
+//     select: { id: true, fullName: true, email: true, createdAt: true },
+//   });
 
-  if (!user) return res.status(404).json({ message: "User not found" });
+//   if (!user) return res.status(404).json({ message: "User not found" });
 
-  res.json(user);
-};
+//   res.json(user);
+// };

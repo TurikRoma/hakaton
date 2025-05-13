@@ -19,6 +19,7 @@ model User {
   email        String          @unique
   passwordHash String
   refreshToken  String?
+  role         UserRole   @default(USER)
   bookings     Booking[]
   services     UserService[]
   digitalKeys  DigitalKey[]
@@ -82,4 +83,11 @@ enum BookingStatus {
   ACTIVE
   COMPLETED
   CANCELLED
+}
+
+enum UserRole {
+  ADMIN
+  CLEANER
+  WAITER
+  USER
 }

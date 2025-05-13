@@ -11,6 +11,6 @@ export const checkRoomAvailability = async (roomId, startDate, endDate) => {
       ],
     },
   });
-
+  console.log(overlappingBookings);
   return overlappingBookings.length === 0;
 };
