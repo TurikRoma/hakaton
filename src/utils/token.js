@@ -3,12 +3,12 @@ import { JWT_SECRET, prisma } from "../config/env.js";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 
-export const generateAccessToken = (userId) => {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: "1d" });
+export const generateAccessToken = (userId, role) => {
+  return jwt.sign({ id: userId, role: role }, JWT_SECRET, { expiresIn: "1d" });
 };
 
-export const generateRefreshToken = (userId) => {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: "30d" });
+export const generateRefreshToken = (userId, role) => {
+  return jwt.sign({ id: userId, role: role }, JWT_SECRET, { expiresIn: "30d" });
 };
 
 export const hashRefreshToken = async (refresh_token, userId) => {

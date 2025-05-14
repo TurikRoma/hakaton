@@ -3,7 +3,13 @@ import { prisma } from "../config/env.js";
 export const getProfile = async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
-    select: { id: true, fullName: true, email: true, createdAt: true },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      createdAt: true,
+      role: true,
+    },
   });
 
   const currentDay = new Date();

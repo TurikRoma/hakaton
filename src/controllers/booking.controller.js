@@ -1,33 +1,38 @@
 import { prisma } from "../config/env.js";
-import { checkRoomAvailability } from "../services/bookingService.js";
 import { generateKey } from "../utils/keyGenerator.js";
-
-const definingRoomId = async (roomName) => {
-  const room = await prisma.room.findUnique({ where: { number: roomName } });
-  return room.id;
-};
 
 export const createBooking = async (req, res) => {
   try {
     const userId = req.user.id; // получаем id авторизованного пользователя (из токена)
-    const { room, startDate, endDate } = req.body;
+    const { startDate, endDate } = req.body;
 
-    const roomId = await definingRoomId(room);
+    const AvaiableRooms = await prisma.room.findMany({
+      where: {
+        bookings: {
+          none: {
+            AND: [
+              { startDate: { lt: new Date(endDate) } },
+              { endDate: { gt: new Date(startDate) } },
+            ],
+          },
+        },
+      },
+      select: {
+        id: true,
+        number: true,
+      },
+    });
 
-    // 1. Проверка: доступна ли комната на указанные даты
-    const isAvailable = await checkRoomAvailability(roomId, startDate, endDate);
-
-    if (!isAvailable) {
+    if (AvaiableRooms.length == 0)
       return res
         .status(400)
-        .json({ message: "Комната недоступна на выбранные даты" });
-    }
+        .json({ message: "No available rooms", AvaiableRooms });
 
     // 2. Создание бронирования
     const booking = await prisma.booking.create({
       data: {
         userId,
-        roomId,
+        roomId: AvaiableRooms[0].id,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
       },
@@ -41,7 +46,7 @@ export const createBooking = async (req, res) => {
         key: keyString,
         userId,
         bookingId: booking.id,
-        roomId,
+        roomId: AvaiableRooms[0].id,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
       },
