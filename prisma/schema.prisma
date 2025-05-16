@@ -23,6 +23,8 @@ model User {
   bookings     Booking[]
   services     UserService[]
   digitalKeys  DigitalKey[]
+  sentMessages Message[]      @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
   createdAt    DateTime        @default(now())
 }
 
@@ -83,6 +85,15 @@ model DigitalKey {
 }
 
 
+model Message {
+  id             Int           @id @default(autoincrement())
+  sender         User          @relation(name: "SentMessages", fields: [senderId], references: [id])
+  senderId       Int
+  receiver       User          @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId     Int
+  content        String
+  createdAt      DateTime 
+}
 
 
 
