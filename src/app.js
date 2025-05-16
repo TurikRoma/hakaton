@@ -7,6 +7,7 @@ import serviceRouter from "./routes/service.route.js";
 import roomsRouter from "./routes/rooms.route.js";
 import messageRoute from "./routes/message.route.js";
 import { initWebSocketServer } from "./websocket/websocket.js";
+import cors from "cors";
 
 const app = express();
 const server = http.createServer(app);
