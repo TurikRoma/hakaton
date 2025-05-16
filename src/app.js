@@ -10,6 +10,7 @@ import { initWebSocketServer } from "./websocket/websocket.js";
 
 const app = express();
 const server = http.createServer(app);
+app.use(cors());
 
 app.use(express.json());
 app.use("/api/auth", AuthRouter);
