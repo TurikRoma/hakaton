@@ -57,3 +57,20 @@ export const GetMessagesById = async (req, res) => {
 
   res.json({ messages });
 };
+
+export const GetQuestion = async (req, res) => {
+  const UserId = req.user.id;
+
+  const all = await prisma.message.findMany({
+    // здесь можно оставить любые другие нужные вам условия
+    orderBy: { createdAt: "asc" },
+  });
+
+  const questions = all.filter((msg) => msg.senderId === msg.receiverId);
+
+  if (questions.length === 0) {
+    return res.status(404).json({ message: "No questions found" });
+  }
+
+  res.json({ messages: questions });
+};
