@@ -93,3 +93,14 @@ export const AllServices = async (req, res) => {
 
   res.json({ messages: all });
 };
+
+export const ChangeServicesStatus = async (req, res) => {
+  const { id } = req.body;
+
+  const updated = await prisma.userService.update({
+    where: { id },
+    data: { status: true },
+  });
+
+  res.json({ messages: updated });
+};
