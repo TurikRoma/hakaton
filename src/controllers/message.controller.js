@@ -74,3 +74,13 @@ export const GetQuestion = async (req, res) => {
 
   res.json({ messages: questions });
 };
+
+export const AllServices = async (req, res) => {
+  const UserId = req.user.id;
+
+  const all = await prisma.userService.findMany({
+    orderBy: { createdAt: "asc" },
+  });
+
+  res.json({ messages: all });
+};
