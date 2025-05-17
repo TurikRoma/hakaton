@@ -79,7 +79,17 @@ export const AllServices = async (req, res) => {
   const UserId = req.user.id;
 
   const all = await prisma.userService.findMany({
-    orderBy: { createdAt: "asc" },
+    include: {
+      user: true, // подтягиваем всю строку User
+      booking: {
+        include: {
+          room: true, // если нужно, можно дотянуть и комнату
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
   });
 
   res.json({ messages: all });
