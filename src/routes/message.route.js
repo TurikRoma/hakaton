@@ -13,6 +13,10 @@ messageRoute.post("/add/message", authMiddleware, AddMessage);
 messageRoute.get("/get/messages", authMiddleware, GetMessagesById);
 messageRoute.get("/get/question", authMiddleware, GetQuestion);
 messageRoute.get("/get/allServices", authMiddleware, AllServices);
-messageRoute.get("/changeStatusServices", authMiddleware, ChangeServicesStatus);
+messageRoute.post(
+  "/changeStatusServices",
+  authMiddleware,
+  ChangeServicesStatus
+);
 
 export default messageRoute;
