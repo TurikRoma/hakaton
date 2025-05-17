@@ -19,7 +19,7 @@ export const createBooking = async (req, res) => {
         .status(400)
         .json({ message: "No available rooms", AvaiableRooms });
     let booking;
-
+    console.log(role);
     if (role == "ADMIN") {
       const user = await prisma.user.findUnique({
         where: {
