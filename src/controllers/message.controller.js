@@ -80,12 +80,11 @@ export const AllServices = async (req, res) => {
 
   const all = await prisma.userService.findMany({
     include: {
-      user: true, // подтягиваем всю строку User
+      user: true, // все поля пользователя
       booking: {
-        include: {
-          room: true, // если нужно, можно дотянуть и комнату
-        },
+        include: { room: true }, // комната внутри бронирования
       },
+      service: true, // все поля сервиса
     },
     orderBy: {
       createdAt: "asc",
