@@ -4,39 +4,52 @@ import { generateKey } from "../utils/keyGenerator.js";
 export const createBooking = async (req, res) => {
   try {
     const userId = req.user.id; // получаем id авторизованного пользователя (из токена)
-    const { startDate, endDate } = req.body;
+    const role = req.user.role;
+    const { roomNumber, startDate, endDate, email = 0 } = req.body;
 
-    const AvaiableRooms = await prisma.room.findMany({
+    const AvaiableRooms = await prisma.room.findUnique({
       where: {
-        bookings: {
-          none: {
-            AND: [
-              { startDate: { lt: new Date(endDate) } },
-              { endDate: { gt: new Date(startDate) } },
-            ],
-          },
-        },
-      },
-      select: {
-        id: true,
-        number: true,
+        number: roomNumber,
       },
     });
 
+    console.log(AvaiableRooms);
     if (AvaiableRooms.length == 0)
       return res
         .status(400)
         .json({ message: "No available rooms", AvaiableRooms });
+    let booking;
+
+    if (role == "ADMIN") {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: email, // Вопросы и ответы, адресованные пользователю
+        },
+      });
+      if (user == []) {
+        return res.status(404).json({ message: "user not found" });
+      }
+      booking = await prisma.booking.create({
+        data: {
+          userId: user.id,
+          roomId: AvaiableRooms.id,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+        },
+      });
+    } else {
+      console.log(roomNumber);
+      booking = await prisma.booking.create({
+        data: {
+          userId,
+          roomId: AvaiableRooms.id,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+        },
+      });
+    }
 
     // 2. Создание бронирования
-    const booking = await prisma.booking.create({
-      data: {
-        userId,
-        roomId: AvaiableRooms[0].id,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-      },
-    });
 
     // 3. Генерация digital ключа
     const keyString = await generateKey(); // генерим ключ
@@ -46,7 +59,7 @@ export const createBooking = async (req, res) => {
         key: keyString,
         userId,
         bookingId: booking.id,
-        roomId: AvaiableRooms[0].id,
+        roomId: AvaiableRooms.id,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
       },
